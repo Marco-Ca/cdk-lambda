@@ -14,7 +14,7 @@ export class CdkServerlessLambdaStack extends cdk.Stack {
 
     const dynamodbLambda = new lambda.Function(this, 'DynamoDBHandler', {
       runtime: lambda.Runtime.NODEJS_12_X,
-      code: lambda.Code.fromAsset('lambda'),
+      code: lambda.Code.fromAsset('functions'),
       handler: 'lambda.handler',
       environment: {
         TABLE_NAME: table.tableName,
@@ -22,15 +22,15 @@ export class CdkServerlessLambdaStack extends cdk.Stack {
     });
     table.grantReadWriteData(dynamodbLambda);
 
-    const api = new apigw.RestApi(this, 'Endpoint', {
-      restApiName: 'Endpoint',
+    const api = new apigw.RestApi(this, 'api-endpoint', {
+      restApiName: 'api-endpoint-name',
     });
 
     api.root
       .resourceForPath('hello')
       .addMethod('GET', new apigw.LambdaIntegration(dynamodbLambda));
 
-    new cdk.CfnOutput(this, 'Endpoint', {
+    new cdk.CfnOutput(this, 'HTTP URL', {
       value: api.url ?? 'Something went wrong',
     });
   }
