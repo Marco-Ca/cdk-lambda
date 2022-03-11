@@ -16,11 +16,12 @@ export class CdkServerlessLambdaStack extends cdk.Stack {
     const dynamodbLambda = new lambda.Function(this, 'DynamoDBHandler', {
       runtime: lambda.Runtime.NODEJS_12_X,
       code: lambda.Code.fromAsset('lambda'),
-      handler: 'dynamodb.handler',
+      handler: 'lambda.handler',
       environment: {
         TABLE_NAME: table.tableName,
       },
     });
-    
+    // permission read and write table
+    table.grantReadWriteData(dynamodbLambda);
   }
 }
