@@ -5,12 +5,22 @@ import * as dynamodb from '@aws-cdk/aws-dynamodb';
 
 export class CdkServerlessLambdaStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
-    super(scope, id, props);    
-  }
+    super(scope, id, props);
 
-  // DynamoDB table definition
-  const table = new dynamodb.Table(this, 'Table', {
-    partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
-    tableName: 'TableName',
-  });
+    const table = new dynamodb.Table(this, 'Table', {
+      partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
+      tableName: 'TableName',
+    });
+
+    // create a dynamodb lambda function
+    const dynamodbLambda = new lambda.Function(this, 'DynamoDBHandler', {
+      runtime: lambda.Runtime.NODEJS_12_X,
+      code: lambda.Code.fromAsset('lambda'),
+      handler: 'dynamodb.handler',
+      environment: {
+        TABLE_NAME: table.tableName,
+      },
+    });
+    
+  }
 }
